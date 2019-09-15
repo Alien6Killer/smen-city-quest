@@ -46,7 +46,7 @@ class ChatServer extends ContainerAwareCommand
             new HttpServer(
                 new WsServer($this->chat)
             ),
-            80
+            8080
         );
 
         $chatServer->run();
