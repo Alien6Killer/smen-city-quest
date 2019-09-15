@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3339:3306"
+    networks:
+      - city-quest
+    volumes:
+      - ./backups/:/backups/
+      - ./docker/mysql/:/docker-entrypoint-initdb.d/
+    environment:
+      - MYSQL_DATABASE=project
+      - MYSQL_USER=developer
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_PASSWORD=password
+
+  php-fpm:
+    build:
+      context: .
+      dockerfile: docker/fpm/Dockerfile
+      args:
+        environment: dev
+    ports:
+      - "8086:8080"
+    volumes:
+      - ./:/usr/src/app
+      - $SSH_AUTH_SOCK:$SSH_AUTH_SOCK
+      - "~/.composer:/root/.composer"
+    networks:
+      - city-quest
+    depends_on:
+      - mysql
+    environment:
+      - SSH_AUTH_SOCK
+      - COMPOSER_ALLOW_SUPERUSER=1
+
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      args:
+        environment: dev
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - "11100:80"
+    networks:
+      - city-quest
+    depends_on:
+      - php-fpm
+
+networks:
+  city-quest:
+    external:
+      name: city-quest
