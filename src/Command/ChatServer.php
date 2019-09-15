@@ -46,7 +46,7 @@ class ChatServer extends ContainerAwareCommand
             new HttpServer(
                 new WsServer($this->chat)
             ),
-            3000
+            $_ENV['port']
         );
 
         $chatServer->run();
