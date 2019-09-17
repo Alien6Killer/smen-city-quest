@@ -1,6 +1,6 @@
 var userId = $('[data-user]').data().user;
 //var socket = new WebSocket("ws://127.0.0.1:8086/chat-id-"+ userId);
-var socket = new WebSocket("ws://" +  location.host + "/wss");
+var socket = new WebSocket("ws://" +  location.host + "/wss?chat-id-"+ userId);
 
 socket.onopen = function () {
     console.log('Connection successful');

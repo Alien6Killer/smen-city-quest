@@ -29,7 +29,7 @@ class AnswerHandler
         $question = $this->questionRepository->findOneBy(['answer' => $message]);
 
         if ($question) {
-            $this->answerRepository->correctAnswer($userId, $question->getId());
+            $this->answerRepository->correctAnswer($userId, $question);
             return $question->getNextQuestion();
         }
 
