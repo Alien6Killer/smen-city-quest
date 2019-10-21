@@ -9,6 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Question
 {
+    const TYPE_QUESTION = 0;
+    const TYPE_HELP = 1;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -20,6 +23,12 @@ class Question
      * @ORM\Column(type="string", length=255)
      */
     private $answer;
+
+    /**
+     * @var integer
+     * @ORM\Column(type="integer", options={"default": 0})
+     */
+    private $type;
 
     /**
      * @ORM\Column(type="text")
@@ -53,5 +62,21 @@ class Question
         $this->next_question = $next_question;
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType(): int
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param int $type
+     */
+    public function setType(int $type): void
+    {
+        $this->type = $type;
     }
 }

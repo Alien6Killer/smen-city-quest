@@ -12,6 +12,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface
 {
+    const SYSTEM_USER = 0;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

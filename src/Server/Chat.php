@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Server;
 
 use App\Handler\AnswerHandler;
+use Doctrine\ORM\EntityManagerInterface;
 use const PHP_EOL;
 use App\Ratchet\ConnectionInterface;
 use App\Ratchet\MessageComponentInterface;
@@ -19,10 +20,15 @@ class Chat implements MessageComponentInterface
      * @var AnswerHandler
      */
     private $answerHandler;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
 
-    public function __construct(AnswerHandler $answerHandler)
+    public function __construct(AnswerHandler $answerHandler, EntityManagerInterface $entityManager)
     {
         $this->answerHandler = $answerHandler;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -69,6 +75,8 @@ class Chat implements MessageComponentInterface
         $messageData[] = $msg;
         \preg_match('/chat\-id\-([0-9]+)/', $from->getChannel(), $matches);
 
+        $this->checkConnection();
+
         if ($answer = $this->answerHandler->handle($msg, (int)$matches[1] ?? 0)) {
             $messageData[] = $answer;
         }
@@ -80,5 +88,22 @@ class Chat implements MessageComponentInterface
         }
 
         unset($messageData);
+    }
+
+    private function checkConnection()
+    {
+        $conn = $this->entityManager->getConnection();
+        $conn->getConfiguration()->setSQLLogger(null);
+        $refresh = true;
+        try {
+            $refresh = false === $conn->ping();
+        } catch (\Throwable $e) {
+
+        } finally {
+            if ($refresh) {
+                $conn->close();
+                $conn->connect();
+            }
+        }
     }
 }

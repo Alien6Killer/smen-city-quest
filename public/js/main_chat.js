@@ -1,6 +1,10 @@
+function connect()
+{
+    return new WebSocket("wss://" +  location.host + "/wss?chat-id-"+ userId);
+}
+
 var userId = $('[data-user]').data().user;
-//var socket = new WebSocket("ws://127.0.0.1:8086/chat-id-"+ userId);
-var socket = new WebSocket("ws://" +  location.host + "/wss?chat-id-"+ userId);
+var socket = connect();
 
 socket.onopen = function () {
     console.log('Connection successful');
@@ -12,17 +16,14 @@ socket.onclose = function (event) {
     } else {
         console.log('Connection killed:(');
     }
-    console.log(event.code + event.reason);
+    socket = connect();
 };
 
 socket.onmessage = function (event) {
-    console.log(event);
-    var list = document.getElementById('list');
-    var message = document.createElement("div");
-    var node = document.createTextNode(event.data);
-    message.appendChild(node);
-    message.classList.add('card');
-    list.appendChild(message);
+    var list = $('#list').last();
+    var message = '<div class="card">'+event.data+'</div>';
+
+    list.append(message)
 };
 
 socket.onerror = function (error) {
