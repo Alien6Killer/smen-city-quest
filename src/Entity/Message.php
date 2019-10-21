@@ -83,7 +83,8 @@ class Message implements \JsonSerializable
     {
        return [
            'message' => $this->message,
-           'date' => $this->date
+           'date' => $this->date,
+           'user' => $this->userId
        ];
     }
 }

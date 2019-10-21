@@ -4,10 +4,11 @@ function connect()
 }
 
 var userId = $('[data-user]').data().user;
-var socket = connect();
+socket = connect();
 
 socket.onopen = function () {
     console.log('Connection successful');
+    loadMessages();
 };
 
 socket.onclose = function (event) {
@@ -53,5 +54,18 @@ textarea.onkeypress = function (ev) {
     }
 };
 
+function loadMessages() {
+    $.ajax({
+       url: '/messages',
+       method: 'GET'
+    }).success(function (data) {
+        data.forEach(function(item, i, arr) {
+            var list = $('#list').last();
+            var message = '<div class="card">'+item+'</div>';
+
+            list.append(message)
+        });
+    });
+}
 
 

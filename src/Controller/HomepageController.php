@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Repository\AnswerRepository;
 use App\Repository\MessageRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,17 +16,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class HomepageController extends AbstractController
 {
     /**
-     * @var AnswerRepository
-     */
-    private $answerRepository;
-    /**
      * @var MessageRepository
      */
     private $messageRepository;
 
-    public function __construct(AnswerRepository $answerRepository, MessageRepository $messageRepository)
+    public function __construct(MessageRepository $messageRepository)
     {
-        $this->answerRepository = $answerRepository;
         $this->messageRepository = $messageRepository;
     }
 
@@ -38,7 +32,7 @@ class HomepageController extends AbstractController
      */
     public function homepage(): Response
     {
-        $answers = $this->answerRepository->findAnswersAndQuestions($this->getUser()->getId());
+        $answers = $this->messageRepository->getUserAndAdminMessages($this->getUser()->getId());
         return $this->render('base.html.twig', ['answers' => $answers]);
     }
 
