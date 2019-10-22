@@ -1,10 +1,5 @@
-function connect()
-{
-    return new WebSocket("wss://" +  location.host + "/wss?chat-id-"+ userId);
-}
-
+var socket = new ReconnectingWebSocket("wss://" +  location.host + "/wss?chat-id-"+ userId);
 var userId = $('[data-user]').data().user;
-socket = connect();
 
 socket.onopen = function () {
     console.log('Connection successful');
@@ -17,7 +12,6 @@ socket.onclose = function (event) {
     } else {
         console.log('Connection killed:(');
     }
-    socket = connect();
 };
 
 socket.onmessage = function (event) {
@@ -56,16 +50,17 @@ textarea.onkeypress = function (ev) {
 
 function loadMessages() {
     $.ajax({
-       url: '/messages',
-       method: 'GET'
-    }).success(function (data) {
-        data.forEach(function(item, i, arr) {
-            var list = $('#list').last();
-            var message = '<div class="card">'+item+'</div>';
+        url: '/messages',
+        method: 'GET',
+        success: function (data) {
+            data.forEach(function(item, i, arr) {
+                var list = $('#list');
+                list.html('');
+                var message = '<div class="card">'+item['message']+'</div>';
 
-            list.append(message)
-        });
+                list.append(message);
+                window.scrollTo(0,document.body.scrollHeight);
+            });
+        }
     });
 }
-
-
