@@ -36,6 +36,16 @@ class Question
      */
     private $next_question;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Question", cascade={"persist", "remove"})
+     */
+    private $prevQuestion;
+
+    public function __toString(): string
+    {
+        return (string)$this->answer ?? 'new';
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -66,9 +76,9 @@ class Question
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getType(): int
+    public function getType(): ?int
     {
         return $this->type;
     }
@@ -79,5 +89,17 @@ class Question
     public function setType(int $type): void
     {
         $this->type = $type;
+    }
+
+    public function getPrevQuestion(): ?self
+    {
+        return $this->prevQuestion;
+    }
+
+    public function setPrevQuestion(?self $prevQuestion): self
+    {
+        $this->prevQuestion = $prevQuestion;
+
+        return $this;
     }
 }

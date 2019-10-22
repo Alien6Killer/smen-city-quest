@@ -54,6 +54,13 @@ class ResultRepository extends ServiceEntityRepository
             }
 
             if ($questionType === Question::TYPE_QUESTION) {
+
+                if ($prevQuestion = $answer->getQuestion()->getPrevQuestion()) {
+                    if ($prevQuestion->getType() == Question::TYPE_SKIP && $this->answerRepository->findOneBy(['user_id' => $result->getUserId(), 'question' => $prevQuestion])) {
+                        return $result;
+                    }
+                }
+
                 if ($this->answerRepository->isFirstAnswer($answer)) {
                     $result->setScore($score + 8);
                     return $result;
