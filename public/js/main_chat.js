@@ -1,5 +1,5 @@
 var userId = $('[data-user]').data().user;
-var socket = new ReconnectingWebSocket("wss://" +  location.host + "/wss?chat-id-"+ userId);
+var socket = new ReconnectingWebSocket("ws://" +  location.host + "/wss?chat-id-"+ userId);
 
 socket.onopen = function () {
     console.log('Connection successful');
@@ -53,9 +53,9 @@ function loadMessages() {
         url: '/messages',
         method: 'GET',
         success: function (data) {
+            var list = $('#list');
+            list.html('');
             data.forEach(function(item, i, arr) {
-                var list = $('#list');
-                list.html('');
                 var message = '<div class="card">'+item['message']+'</div>';
 
                 list.append(message);

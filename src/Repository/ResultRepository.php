@@ -30,15 +30,13 @@ class ResultRepository extends ServiceEntityRepository
     public function addCorrectAnswer(int $userId, Answer $answer): void
     {
         $userResult = $this->findUserResult($userId);
-        $userResult = $this->calculateScore($userResult, $answer);
-        $this->_em->flush($userResult);
+        $this->calculateScore($userResult, $answer);
+        $this->_em->flush();
     }
 
     private function calculateScore(Result $result, Answer $answer): Result
     {
-        $alreadyHaveAnswer = $result->getAnswers()->exists(function($key, $element) use ($answer){
-            return $answer->getId() === $element->getId();
-        });
+        $alreadyHaveAnswer = $result->getAnswers()->contains($answer);
 
         if (!$alreadyHaveAnswer) {
             $result->addAnswer($answer);
@@ -89,6 +87,7 @@ class ResultRepository extends ServiceEntityRepository
             $result->setScore(0);
 
             $this->_em->persist($result);
+            $this->_em->flush($result);
         }
 
         return $result;

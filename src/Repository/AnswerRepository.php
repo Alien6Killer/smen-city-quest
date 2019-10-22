@@ -29,7 +29,8 @@ class AnswerRepository extends ServiceEntityRepository
             $answer
                 ->setUserId($userId)
                 ->setQuestion($question)
-                ->setCreatedAt(new \DateTime());
+                ->setCreatedAt(new \DateTime())
+                ->setResult(null);
 
             $this->_em->persist($answer);
             $this->_em->flush($answer);
@@ -55,20 +56,20 @@ class AnswerRepository extends ServiceEntityRepository
     {
         $answers = $this->findBy(['question' => $answer->getQuestion()]);
 
-        return empty($answers);
+        return count($answers) == 1;
     }
 
     public function isSecondAnswer(Answer $answer): bool
     {
         $answers = $this->findBy(['question' => $answer->getQuestion()]);
 
-        return count($answers) == 1;
+        return count($answers) == 2;
     }
 
     public function isThirdAnswer(Answer $answer): bool
     {
         $answers = $this->findBy(['question' => $answer->getQuestion()]);
 
-        return count($answers) == 2;
+        return count($answers) == 3;
     }
 }
