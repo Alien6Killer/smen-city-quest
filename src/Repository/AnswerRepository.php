@@ -20,18 +20,24 @@ class AnswerRepository extends ServiceEntityRepository
         parent::__construct($registry, Answer::class);
     }
 
-    public function correctAnswer(int $userId, Question $question): Answer
+    public function logCorrectAnswer(int $userId, Question $question): ?Answer
     {
-        $answer = new Answer();
-        $answer
-            ->setUserId($userId)
-            ->setQuestion($question)
-            ->setCreatedAt(new \DateTime());
+        $result = $this->findOneBy(['user_id' => $userId, 'question' => $question]);
 
-        $this->_em->persist($answer);
-        $this->_em->flush($answer);
+        if (!$result) {
+            $answer = new Answer();
+            $answer
+                ->setUserId($userId)
+                ->setQuestion($question)
+                ->setCreatedAt(new \DateTime());
 
-        return $answer;
+            $this->_em->persist($answer);
+            $this->_em->flush($answer);
+
+            return $answer;
+        }
+
+        return null;
     }
 
     public function findAnswersAndQuestions(int $userId)
@@ -43,5 +49,26 @@ class AnswerRepository extends ServiceEntityRepository
             ->setParameter('userId', $userId)
             ->getQuery()
             ->getResult();
+    }
+
+    public function isFirstAnswer(Answer $answer): bool
+    {
+        $answers = $this->findBy(['question' => $answer->getQuestion()]);
+
+        return empty($answers);
+    }
+
+    public function isSecondAnswer(Answer $answer): bool
+    {
+        $answers = $this->findBy(['question' => $answer->getQuestion()]);
+
+        return count($answers) == 1;
+    }
+
+    public function isThirdAnswer(Answer $answer): bool
+    {
+        $answers = $this->findBy(['question' => $answer->getQuestion()]);
+
+        return count($answers) == 2;
     }
 }

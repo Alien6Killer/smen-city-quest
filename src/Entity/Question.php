@@ -11,6 +11,7 @@ class Question
 {
     const TYPE_QUESTION = 0;
     const TYPE_HELP = 1;
+    const TYPE_SKIP = 2;
 
     /**
      * @ORM\Id()

@@ -7,6 +7,7 @@ namespace App\Handler;
 use App\Repository\AnswerRepository;
 use App\Repository\MessageRepository;
 use App\Repository\QuestionRepository;
+use App\Repository\ResultRepository;
 
 class AnswerHandler
 {
@@ -22,15 +23,21 @@ class AnswerHandler
      * @var MessageRepository
      */
     private $messageRepository;
+    /**
+     * @var ResultRepository
+     */
+    private $resultRepository;
 
     public function __construct(
         QuestionRepository $questionRepository,
         AnswerRepository $answerRepository,
-        MessageRepository $messageRepository
+        MessageRepository $messageRepository,
+        ResultRepository $resultRepository
     ) {
         $this->questionRepository = $questionRepository;
         $this->answerRepository = $answerRepository;
         $this->messageRepository = $messageRepository;
+        $this->resultRepository = $resultRepository;
     }
 
     public function handle(string $message, int $userId): ?string
@@ -39,8 +46,10 @@ class AnswerHandler
         $question = $this->questionRepository->findOneBy(['answer' => $message]);
 
         if ($question) {
-            $this->answerRepository->correctAnswer($userId, $question);
-            $this->messageRepository->logSystemMessage($question->getNextQuestion());
+            if ($answer = $this->answerRepository->logCorrectAnswer($userId, $question)) {
+                $this->messageRepository->logSystemMessage($question->getNextQuestion());
+                $this->resultRepository->addCorrectAnswer($userId, $answer);
+            }
             return $question->getNextQuestion();
         }
 

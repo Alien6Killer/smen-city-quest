@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Repository\MessageRepository;
+use App\Repository\ResultRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,10 +20,15 @@ class HomepageController extends AbstractController
      * @var MessageRepository
      */
     private $messageRepository;
+    /**
+     * @var ResultRepository
+     */
+    private $resultRepository;
 
-    public function __construct(MessageRepository $messageRepository)
+    public function __construct(MessageRepository $messageRepository, ResultRepository $resultRepository)
     {
         $this->messageRepository = $messageRepository;
+        $this->resultRepository = $resultRepository;
     }
 
     /**
@@ -44,5 +50,16 @@ class HomepageController extends AbstractController
     public function getMessages(): JsonResponse
     {
         return new JsonResponse($this->messageRepository->getUserAndAdminMessages($this->getUser()->getId()));
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @Route("/result-page", name="results")
+     */
+    public function resultPage(): Response
+    {
+        $result = $this->resultRepository->findAll();
+        return $this->render('results.html.twig', ['results' => $result]);
     }
 }

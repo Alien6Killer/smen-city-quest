@@ -32,6 +32,11 @@ class Answer
      */
     private $question;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Result", inversedBy="answers")
+     */
+    private $result;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -74,5 +79,17 @@ class Answer
     public function getQuestion(): Question
     {
         return $this->question;
+    }
+
+    public function getResult(): ?Result
+    {
+        return $this->result;
+    }
+
+    public function setResult(?Result $result): self
+    {
+        $this->result = $result;
+
+        return $this;
     }
 }

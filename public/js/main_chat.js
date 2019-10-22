@@ -1,5 +1,5 @@
-var socket = new ReconnectingWebSocket("wss://" +  location.host + "/wss?chat-id-"+ userId);
 var userId = $('[data-user]').data().user;
+var socket = new ReconnectingWebSocket("wss://" +  location.host + "/wss?chat-id-"+ userId);
 
 socket.onopen = function () {
     console.log('Connection successful');
